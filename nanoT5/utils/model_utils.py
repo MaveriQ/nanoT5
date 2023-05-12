@@ -8,14 +8,13 @@ from transformers import (
     T5ForConditionalGeneration,
     AutoConfig,
 )
-
+from morphpiece import MorphPieceBPE
 from .copied_utils import (
     compute_input_and_target_lengths,
     DataCollatorForT5MLM,
     tokenize_function,
     DataCollatorForNI,
 )
-
 
 def get_model(args, config):
     if args.model.checkpoint_path:
@@ -41,14 +40,22 @@ def get_config(args):
         args.model.name,
     )
     config.dropout_rate = args.model.dropout
+    if args.model.use_morphpiece:
+        config.vocab_size = 50006
     return config
 
 
 def get_tokenizer(args):
-    tokenizer = AutoTokenizer.from_pretrained(
-        args.model.name,
-        use_fast=True
-    )
+
+    if args.model.use_morphpiece:
+        print('Using Morphpiece BPE')
+        tokenizer = MorphPieceBPE()
+    else:
+        print('Using HuggingFace tokenizer')
+        tokenizer = AutoTokenizer.from_pretrained(
+            args.model.name,
+            use_fast=True
+        )
     tokenizer.model_max_length = int(1e9)
 
     return tokenizer
