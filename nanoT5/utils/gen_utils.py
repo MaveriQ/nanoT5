@@ -17,6 +17,7 @@ def check_args_and_env(args):
         assert torch.cuda.is_available(), 'We use GPU to train/eval the model'
 
     assert not (args.eval_only and args.predict_only)
+    assert not (args.model.use_gpt2 and args.model.use_morphpiece)
 
     if args.predict_only:
         assert args.mode == 'ft'

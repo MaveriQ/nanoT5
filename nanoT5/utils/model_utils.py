@@ -43,8 +43,12 @@ def get_config(args):
         args.model.name,
     )
     config.dropout_rate = args.model.dropout
+    config.d_ff = args.model.d_ff
     if args.model.use_morphpiece:
         config.vocab_size = 50006
+    elif args.model.use_gpt2:
+        config.vocab_size = 50257
+    print(f"Vocab size: {config.vocab_size}")
     return config
 
 
@@ -53,6 +57,12 @@ def get_tokenizer(args):
     if args.model.use_morphpiece:
         print('Using Morphpiece BPE')
         tokenizer = MorphPieceBPE()
+    elif args.model.use_gpt2:
+        print('Using HuggingFace GPT-2 tokenizer')
+        tokenizer = AutoTokenizer.from_pretrained(
+            "gpt2",
+            use_fast=True
+        )
     else:
         print('Using HuggingFace tokenizer')
         tokenizer = AutoTokenizer.from_pretrained(
@@ -324,6 +334,20 @@ def get_lr_scheduler(optimizer, args, logger):
         lr_scheduler = get_scheduler(
             name=args.optim.lr_scheduler,
             optimizer=optimizer,
+        )
+
+    elif args.optim.lr_scheduler == 'onecycle':
+        from torch.optim.lr_scheduler import OneCycleLR
+        lr_scheduler = OneCycleLR(
+            optimizer,
+            max_lr=args.optim.base_lr,
+            total_steps=args.optim.total_steps,
+            pct_start=args.optim.warmup_steps / args.optim.total_steps,
+            div_factor=100,
+            final_div_factor=10,
+            three_phase=False,
+            anneal_strategy='cos',
+            last_epoch=-1,
         )
     else:
         raise NotImplementedError

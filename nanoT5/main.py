@@ -24,7 +24,7 @@ def main(args):
                               mixed_precision=args.optim.mixed_precision,
                             #   deepspeed_plugin=args.optim.deepspeed_plugin,
                               )
-    logger = setup_basics(accelerator, args)
+    logger = setup_basics(args,accelerator)
     config = get_config(args)
     model = get_model(args, config)
     tokenizer = get_tokenizer(args)
