@@ -47,7 +47,7 @@ def update_paths(args):
         args.data.task_dir = to_absolute_path(args.data.task_dir)
 
 
-def setup_basics(accelerator, args):
+def setup_basics(args, accelerator=None):
     check_args_and_env(args)
     update_args_with_env_info(args)
     update_paths(args)

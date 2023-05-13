@@ -32,6 +32,9 @@ def get_model(args, config):
             config=config,
         )
 
+    if args.model.gradient_checkpointing:
+        model.gradient_checkpointing_enable()
+
     return model
 
 

@@ -4,7 +4,7 @@ import hydra
 import torch
 import time
 
-from .utils import (
+from utils import (
     setup_basics,
     train,
     predict,
@@ -21,7 +21,8 @@ from .utils import (
 @hydra.main(config_path="configs", config_name="default", version_base='1.1')
 def main(args):
     accelerator = Accelerator(cpu=args.device == "cpu",
-                              mixed_precision=args.mixed_precision,
+                              mixed_precision=args.optim.mixed_precision,
+                            #   deepspeed_plugin=args.optim.deepspeed_plugin,
                               )
     logger = setup_basics(accelerator, args)
     config = get_config(args)
