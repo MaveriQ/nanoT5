@@ -7,6 +7,7 @@ mode: 'pt'
 device: gpu
 eval_only: false
 predict_only: false
+split_size: 2048
 seed: 2137
 
 model:
@@ -21,18 +22,20 @@ model:
   gradient_checkpointing: true
 
 data:
+  max_train_samples: 1000
   input_length: 512
   mlm_probability: 0.15
   mean_noise_span_length: 3.0
   num_workers: 8
+  streaming: true
 
 optim:
   name: adamwscale
-  base_lr: 1e-2
-  batch_size: 160
-  total_steps: 200000
+  base_lr: 1e-3
+  batch_size: 400
+  total_steps: 100000
   epochs: -1 # If it's > 0 it overwrites total_steps
-  warmup_steps: 4000
+  warmup_steps: 2000
   lr_scheduler: onecycle
   weight_decay: 0.0
   grad_clip: 1.0
@@ -46,15 +49,15 @@ eval:
   steps: 100
 
 checkpoint:
-  every_steps: 5000
+  every_steps: 1000
 
 logging:
   neptune: true
   neptune_creds:
     project: maveriq/MorphT5
     api_token: "eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiI5MWZhOGUxZC0xMTVhLTRjMTEtYjYxMi1mZTU3Y2Y1NTQwZjYifQ=="
-    tags:
-  every_steps: 20
+    tags: morph,bs456,compiled
+  every_steps: 50
   grad_l2: true
   weights_l2: true
 

@@ -10,7 +10,8 @@ def maybe_save_checkpoint(accelerator, args):
         args.current_train_step > args.optim.total_steps
         or args.current_train_step % args.checkpoint.every_steps == 0
     ):
-        output_dir = f'checkpoint-{args.mode}-{args.current_train_step}'
+        dir = "_".join(args.logging.neptune_creds.tags.split(','))
+        output_dir = f'checkpoint-{dir}-{args.mode}-{args.current_train_step}'
         accelerator.save_state(output_dir=output_dir)
 
 

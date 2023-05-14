@@ -79,7 +79,7 @@ def load_dataset_splits(args):
         dataset = datasets.load_dataset(
             'c4',
             'en',
-            streaming=True,
+            streaming=args.data.streaming,
         )
 
         dataset = dataset.remove_columns(
@@ -137,8 +137,9 @@ def process_dataset(dataset_splits, args, tokenizer):
                 remove_columns=['text'],
             )
 
-            dataset_split = dataset_split.shuffle(buffer_size=10_000, seed=args.seed)
+            # dataset_split = dataset_split.shuffle(buffer_size=10_000, seed=args.seed)
             final_datasets[split] = dataset_split
+
     elif args.mode == 'ft':
         final_datasets = dataset_splits
     else:
@@ -266,7 +267,7 @@ def get_optimizer(model, args):
     return optimizer
 
 
-def get_lr_scheduler(optimizer, args, logger):
+def get_lr_scheduler(optimizer, args, logger=None):
     if args.optim.lr_scheduler == 'cosine':
         from torch.optim.lr_scheduler import (
             SequentialLR,
@@ -347,7 +348,7 @@ def get_lr_scheduler(optimizer, args, logger):
             final_div_factor=10,
             three_phase=False,
             anneal_strategy='cos',
-            last_epoch=-1,
+            # last_epoch=-1,
         )
     else:
         raise NotImplementedError

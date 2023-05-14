@@ -3,6 +3,8 @@ from omegaconf import open_dict
 import hydra
 import torch
 import time
+import os
+
 
 from utils import (
     setup_basics,
@@ -20,6 +22,7 @@ from utils import (
 
 @hydra.main(config_path="configs", config_name="default", version_base='1.1')
 def main(args):
+    # os.environ["PYTORCH_CUDA_ALLOC_CONF"] = f"max_split_size_mb:{args.split_size}"
     accelerator = Accelerator(cpu=args.device == "cpu",
                               mixed_precision=args.optim.mixed_precision,
                             #   deepspeed_plugin=args.optim.deepspeed_plugin,
@@ -33,6 +36,8 @@ def main(args):
     train_dataloader, test_dataloader = get_dataloaders(tokenizer, config, args)
 
     logger.log_args(args)
+
+    print('Checkpoint Directory:', "_".join(args.logging.neptune_creds.tags.split(',')))
 
     (
         model,
